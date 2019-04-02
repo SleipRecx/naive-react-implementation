@@ -1,10 +1,11 @@
 import JSON from 'circular-json'
+//import React from "react"
 
 /** @jsx createElement */
 const createElement = (type, props={}, ...children) => {
     props = props ? props: {}
     delete props["__source"]
-    props["children"] = children[0]
+    props["children"] = children
     const key = props.hasOwnProperty("key") ? props.key : null
     delete props["key"]
     return { type, key, props}
@@ -13,27 +14,29 @@ const createElement = (type, props={}, ...children) => {
 
 const prettyVDOM = vdom => JSON.stringify(vdom, null, 2);  
 
+const flatten = nestedArray => [].concat(...nestedArray)
+
 const persons = ["Espen", "Corry", "Simen", "Markus"]
 const list = persons.map((person, index) => {
     return (<li key={index}>{person}</li>)
 })
 
-const vdom = (
+const Heading = ({ name }) => {
+    const handleClick = () => { console.log("Clicked")}
+    return (<h3 onClick={handleClick}>{name}</h3>)
+}
+    
+let vdom = (
     <div>
-        <ul>
+        <Heading name="Personer:" />
+        <ul className="myList">
             {list}
         </ul>
     </div>
 )
 
-/*
-const patch = (dom, vdom, parent=dom.parentNode) => {
-    return render(vdom, parent)
-}
-*/
 
 const render = (vdom, parent=null) => {
-    console.log(vdom)
     const mount = element => {
         if (parent) {
             return parent.appendChild(element)
@@ -46,13 +49,15 @@ const render = (vdom, parent=null) => {
     } else if (typeof vdom == 'boolean' || vdom === null) {
         return mount(document.createTextNode(''));
     } else if (typeof vdom == 'object' && typeof vdom.type == 'function') {
-        return render(vdom.type, parent);
+        return render(vdom.type(vdom.props), parent);
     } else if (typeof vdom == 'object' && typeof vdom.type == 'string') {
         const dom = mount(document.createElement(vdom.type));
-        const children = ([].concat(...[vdom.props.children]))
-        children.forEach(child => render(child, dom))
+        flatten(vdom.props.children).forEach(child => render(child, dom))
         if (vdom.key) {
             dom.setAttribute("key", vdom.key)
+        }
+        if (vdom.props.onClick) {
+            dom.addEventListener("click", vdom.props.onClick) 
         }
         return dom;
     } else {
@@ -60,7 +65,31 @@ const render = (vdom, parent=null) => {
     }
 };
 
+/*
+const patch = (dom, vdom, parent=dom.parentNode) => {
+    return render(vdom, parent)
+}
+*/
+
+const updateDom  = () => {
+    vdom = <h1>Hacked</h1>
+}
+
+setTimeout(() => {
+    updateDom()
+}, 2000);
+
+
 const root = document.getElementById("render")
 root.appendChild(render(vdom))
+
 const code = document.getElementById("code")
 code.textContent = prettyVDOM(vdom)
+
+setInterval(() => {
+    code.textContent = prettyVDOM(vdom)
+}, 100)
+
+setInterval(() => {
+    root.replaceChild(render(vdom), root.firstChild)
+}, 100)

@@ -54,8 +54,8 @@ const vdom = <Test name="Corry" />
 
 React.render(vdom, document.getElementById("root"))
 const code = document.getElementById("code")
-code.textContent = JSON.stringify(React.bla(), null, 2);
+code.textContent = JSON.stringify(React.logVDOM(), null, 2);
 
 setInterval(() => {
-    code.textContent = JSON.stringify(React.bla(), null, 2);
+    code.textContent = JSON.stringify(React.logVDOM(), null, 2);
 }, 100)

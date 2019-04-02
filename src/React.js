@@ -20,14 +20,12 @@ const setAttribute = (dom, key, value) => {
     }
 };
 
-let bla
-
-
+let logVDOM
 const _render = (vdom, parent=null) => {
     if (vdom){
         if (vdom.hasOwnProperty("props")){
             if (vdom.props.hasOwnProperty("className")){
-                bla = vdom
+                logVDOM = vdom
             }
         }
     }
@@ -136,5 +134,5 @@ const render = (element, container) => {
 }
 
  
-export default { createElement, render, Component, bla: () => bla };
+export default { createElement, render, Component, logVDOM: () => logVDOM };
 

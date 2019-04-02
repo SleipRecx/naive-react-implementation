@@ -21,6 +21,7 @@ const setAttribute = (dom, key, value) => {
 };
 
 let logVDOM
+let logDOM 
 const _render = (vdom, parent=null) => {
     if (vdom){
         if (vdom.hasOwnProperty("props")){
@@ -46,7 +47,7 @@ const _render = (vdom, parent=null) => {
     } else if (typeof vdom == 'object' && typeof vdom.type == 'string') {
         const dom = mount(document.createElement(vdom.type));
         flatten(vdom.props.children).forEach(child => _render(child, dom))
-        if (vdom.key) {
+        if (vdom.key !== undefined && vdom.key !== null){
             dom.setAttribute("key", vdom.key)
         }
         for (const prop in vdom.props) {
@@ -74,6 +75,7 @@ const _patch = (dom, vdom, parent=dom.parentNode) => {
     const root = document.getElementById("root")
     root.removeChild(root.childNodes[0])
     document.getElementById("root").appendChild(_render(vdom))   
+    logDOM = _render(vdom)
     //const replace = parent ? el => (parent.replaceChild(el, dom) && el) : (el => el);
     //return replace(_render(vdom, parent))
 }
@@ -135,8 +137,8 @@ componentWillUnmount() {
 
 const render = (element, container) => {
     container.appendChild(_render(element))   
+    logDOM = _render(element)
 }
-
  
-export default { createElement, render, Component, logVDOM: () => logVDOM };
+export default { createElement, render, _render, Component, logVDOM: () => logVDOM, logDOM: () => logDOM };
 

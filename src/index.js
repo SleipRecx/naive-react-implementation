@@ -1,4 +1,5 @@
 import JSON from 'circular-json'
+import pretty from 'pretty'
 import React from './React';
 
 const HeadingWithoutJSX = ({ name }) => {
@@ -46,9 +47,13 @@ class App extends React.Component {
 const app = <App name="Corry" />
 
 React.render(app, document.getElementById("root"))
-const code = document.getElementById("code")
-code.textContent = JSON.stringify(React.logVDOM(), null, 2);
+const vdom = document.getElementById("vdom")
+const dom = document.getElementById("dom")
+
+vdom.textContent = JSON.stringify(React.logVDOM(), null, 2);
+dom.textContent = pretty(React.logDOM().outerHTML)
 
 setInterval(() => {
-    code.textContent = JSON.stringify(React.logVDOM(), null, 2);
+    vdom.textContent = JSON.stringify(React.logVDOM(), null, 2);
+    dom.textContent = pretty(React.logDOM().outerHTML)
 }, 100)

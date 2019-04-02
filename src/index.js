@@ -26,7 +26,7 @@ class App extends React.Component {
     render(){
         const todos = this.state.todos.map((todo, i) => {
             return (<li key={i} onClick={() => {
-                const filteredTodos = this.state.todos.filter(t => t !== todo)
+                const filteredTodos = this.state.todos.filter((t, index) => i !== index)
                 this.setState({todos: filteredTodos})
             }}> {todo} </li>)
         })

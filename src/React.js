@@ -1,4 +1,6 @@
-// import React from "react"
+let logVDOM
+let logDOM 
+let renders = 0
 
 const flatten = nestedArray => [].concat(...nestedArray)
 
@@ -20,8 +22,6 @@ const setAttribute = (dom, key, value) => {
     }
 };
 
-let logVDOM
-let logDOM 
 const _render = (vdom, parent=null) => {
     if (vdom){
         if (vdom.hasOwnProperty("props")){
@@ -33,13 +33,14 @@ const _render = (vdom, parent=null) => {
     }
     const mount = element => {
         if (parent) {
+            renders += 1
             return parent.appendChild(element)
         } 
         return element
     }
 
     if (typeof vdom == 'string' || typeof vdom == 'number') {
-        mount(document.createTextNode(vdom))
+        return mount(document.createTextNode(vdom))
     } else if (typeof vdom == 'boolean' || vdom === null) {
         return mount(document.createTextNode(''));
     } else if (typeof vdom == 'object' && typeof vdom.type == 'function') {
@@ -88,10 +89,19 @@ class Component {
     }
 
 setState(next) {
-    this.state = {...this.state, ...next}
+    if (typeof next === "object") {
+        this.state = {...this.state, ...next}
+    } else if (typeof next === "function") {
+        const update = next({ ...this.state })
+        console.log(update)
+        this.state = {...this.state, ...update }
+    } else {
+        throw Error("setState Error")
+    }
+    renders = 0
     _patch(this.base, this.render());    
-
-}_
+    console.log("Re-rendering updated DOM", renders, "times.")
+}
 
 static render(vdom, parent = null) {
     const props = Object.assign({}, vdom.props, {children: vdom.children});
@@ -136,8 +146,12 @@ componentWillUnmount() {
 }
 
 const render = (element, container) => {
+    renders = 0
     container.appendChild(_render(element))   
+    console.log("Inital rendering updated DOM", renders, "times.")
+    renders = 0
     logDOM = _render(element)
+    renders = 0
 }
  
 export default { createElement, render, _render, Component, logVDOM: () => logVDOM, logDOM: () => logDOM };

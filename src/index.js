@@ -18,16 +18,16 @@ class App extends React.Component {
     }
 
     handleChange(e){
-        const newTodos = [...this.state.todos]
-        newTodos.push(e.target.value) 
-        this.setState({ todos: newTodos})
+        this.setState(prevState => {
+            prevState.todos.push(e.target.value)
+            return { todos: prevState.todos }
+        })
     }
   
     render(){
         const todos = this.state.todos.map((todo, i) => {
             return (<li key={i} onClick={() => {
-                const filteredTodos = this.state.todos.filter((t, index) => i !== index)
-                this.setState({todos: filteredTodos})
+                this.setState(prevState => ({ todos:  prevState.todos.filter((t, index) => i !== index) }))
             }}> {todo} </li>)
         })
         return (
@@ -51,9 +51,9 @@ const vdom = document.getElementById("vdom")
 const dom = document.getElementById("dom")
 
 vdom.textContent = JSON.stringify(React.logVDOM(), null, 2);
-dom.textContent = pretty(React.logDOM().outerHTML)
+dom.textContent = pretty(React.logDOM().outerHTML, {ocd: true})
 
 setInterval(() => {
     vdom.textContent = JSON.stringify(React.logVDOM(), null, 2);
-    dom.textContent = pretty(React.logDOM().outerHTML)
+    dom.textContent = pretty(React.logDOM().outerHTML, {ocd: true})
 }, 100)

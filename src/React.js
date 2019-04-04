@@ -93,7 +93,6 @@ setState(next) {
         this.state = {...this.state, ...next}
     } else if (typeof next === "function") {
         const update = next({ ...this.state })
-        console.log(update)
         this.state = {...this.state, ...update }
     } else {
         throw Error("setState Error")
